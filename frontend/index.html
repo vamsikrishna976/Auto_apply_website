@@ -1,0 +1,31 @@
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>AutoApply Dashboard</title>
+<style>body{font-family:Arial;margin:18px} .btn{background:#0b84ff;color:#fff;padding:8px 12px;border:none;border-radius:6px;cursor:pointer} #log{white-space:pre-wrap;background:#f7f7f7;padding:10px;height:360px;overflow:auto}</style>
+</head>
+<body>
+<h2>AutoApply Dashboard</h2>
+<div>
+  <label>Site: <select id="site"><option value="naukri">Naukri</option><option value="indeed">Indeed</option><option value="linkedin">LinkedIn</option><option value="glassdoor">Glassdoor</option></select></label>
+  <label style="margin-left:10px">Keyword: <input id="keyword" value="Frontend Developer"></label>
+  <label style="margin-left:10px">Location: <input id="location" value="Bangalore"></label>
+  <label style="margin-left:10px">Max Applies: <input id="max" type="number" value="1" min="1" style="width:60px"></label>
+  <button id="applyBtn" class="btn">Apply</button>
+</div>
+<h3>Logs</h3><div id="log"></div>
+<script>
+document.getElementById('applyBtn').addEventListener('click', async ()=>{
+  const site = document.getElementById('site').value;
+  const keyword = document.getElementById('keyword').value;
+  const location = document.getElementById('location').value;
+  const max = document.getElementById('max').value;
+  log('Starting apply ➜ '+site+' : '+keyword+' @ '+location);
+  const resp = await fetch('/apply', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({site,keyword,location,max_applies:max})});
+  const data = await resp.json();
+  if(!data.ok){ log('Error: '+(data.error||JSON.stringify(data))); return; }
+  log('Result: '+JSON.stringify(data.result,null,2));
+});
+function log(msg){ const el=document.getElementById('log'); el.textContent=(new Date().toLocaleTimeString())+' '+msg+'\n\n'+el.textContent }
+</script>
+</body>
+</html>
